@@ -87,13 +87,15 @@ date_default_timezone_set("Europe/Vilnius");
 				echo "<select name=\"role_" . $user . "\">";
 				$yra = false;
 				foreach ($user_roles as $x => $x_value) {
-					echo "<option ";
-					if ($x_value == $level) {
-						$yra = true;
-						echo "selected ";
+					if ($x != "Svecias") {
+						echo "<option ";
+						if ($x_value == $level) {
+							$yra = true;
+							echo "selected ";
+						}
+						echo "value=\"" . $x_value . "\" ";
+						echo ">" . $x . "</option>";
 					}
-					echo "value=\"" . $x_value . "\" ";
-					echo ">" . $x . "</option>";
 				}
 				if (!$yra) {
 					echo "<option selected value=" . $level . ">Neegzistuoja=" . $level . "</option>";

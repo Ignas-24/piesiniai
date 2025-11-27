@@ -41,14 +41,15 @@ if (empty($konkursas_id)) {
             <td>
                 <p>Konkurso informacija</p>
                 <?php
-                $sql = "SELECT pavadinimas, aprasas, pradzia, pabaiga FROM " . TBL_KONKURSAS . " WHERE id = $konkursas_id";
+                $sql = "SELECT pavadinimas, aprasas, ikelimo_pradzia, vertinimo_pradzia, vertinimo_pabaiga FROM " . TBL_KONKURSAS . " WHERE id = $konkursas_id";
                 $result = mysqli_query($db, $sql);
                 if ($result && mysqli_num_rows($result) > 0) {
                     $row = mysqli_fetch_assoc($result);
                     echo "<b>Pavadinimas:</b> " . htmlspecialchars($row['pavadinimas']) . "<br>";
                     echo "<b>Aprašas:</b> " . nl2br(htmlspecialchars($row['aprasas'])) . "<br>";
-                    echo "<b>Pradžia:</b> " . htmlspecialchars($row['pradzia']) . "<br>";
-                    echo "<b>Pabaiga:</b> " . htmlspecialchars($row['pabaiga']) . "<br>";
+                    echo "<b>Įkėlimo pradžia:</b> " . htmlspecialchars($row['ikelimo_pradzia']) . "<br>";
+                    echo "<b>Vertinimo pradžia:</b> " . htmlspecialchars($row['vertinimo_pradzia']) . "<br>";
+                    echo "<b>Vertinimo pabaiga:</b> " . htmlspecialchars($row['vertinimo_pabaiga']) . "<br>";
                 } else {
                     echo "Klaida skaitant konkurso informaciją.";
                     mysqli_close($db);

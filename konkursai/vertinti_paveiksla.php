@@ -1,6 +1,10 @@
 <?php
 session_start();
-if (isset($_SESSION["prev"]) && $_SESSION["prev"] != "konkursai/perziureti_paveiksla" && $_SESSION["prev"] != "konkursai/vertinti_paveiksla") {
+if (
+    isset($_SESSION["prev"]) &
+    $_SESSION["prev"] != "konkursai/vertinti_paveiksla" &&
+    $_SESSION["prev"] != "konkursai/vertinti_konkursa"
+) {
     header("Location: ../logout.php");
     exit;
 }
@@ -22,7 +26,7 @@ if (empty($paveikslas_id)) {
 </head>
 
 <body>
-    <a href="../konkursai/perziureti_paveiksla.php?id=<?php echo $paveikslas_id; ?>">Grįžti į paveikslo peržiūrą</a><br>
+    <?php echo "<a href=\"../konkursai/vertinti_konkursa.php?id=" . ($_POST['konkursas_id'] ?? '') . "\">Grįžti į konkursą</a><br>"; ?>
 </body>
 
 </html>
@@ -62,7 +66,8 @@ if (!mysqli_query($db, $sql)) {
     mysqli_close($db);
     exit;
 }
+$konkursas_id = $_POST['konkursas_id'] ?? '';
 mysqli_close($db);
-header("Location: ../konkursai/perziureti_paveiksla.php?id=" . $paveikslas_id . "&msg=vertinta");
+header("Location: ../konkursai/vertinti_konkursa.php?id=$konkursas_id&vertintas=$paveikslas_id&msg=vertinta");
 exit;
 ?>

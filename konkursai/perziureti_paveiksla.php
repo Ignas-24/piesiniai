@@ -3,8 +3,9 @@ session_start();
 include("../include/nustatymai.php");
 if (
     !isset($_SESSION['prev']) || (($_SESSION['prev'] != "konkursai/perziureti_paveiksla") &&
-        ($_SESSION['prev'] != "konkursai/perziureti_konkursa") && ($_SESSION['prev'] != "konkursai/vertinti_paveiksla")
-        && ($_SESSION['prev'] != "konkursai/komentuoti_paveiksla"))
+        ($_SESSION['prev'] != "konkursai/perziureti_konkursa")
+        && ($_SESSION['prev'] != "konkursai/komentuoti_paveiksla")
+        && ($_SESSION['prev'] != "konkursai/trinti_paveiksla"))
 ) {
     header("Location: ../logout.php");
     exit;
@@ -21,7 +22,7 @@ if (empty($paveikslas_id)) {
     echo "Nenurodytas paveikslas.";
     exit;
 }
-$sql = "SELECT id, pavadinimas, komentaras, ikelimo_data, failo_vieta, vartotojas.slapyvardis, fk_Konkursasid 
+$sql = "SELECT id, pavadinimas, komentaras, ikelimo_data, failo_vieta, vartotojas.slapyvardis, fk_Konkursasid , vartotojas.uid
     FROM " . TBL_PAVEIKSLAS . " LEFT JOIN " . TBL_USERS . " 
     ON " . TBL_PAVEIKSLAS . ".fk_Vartotojasuid =" . TBL_USERS . ".uid 
     WHERE id = $paveikslas_id ORDER BY ikelimo_data DESC";
@@ -35,10 +36,17 @@ if ($result && mysqli_num_rows($result) > 0) {
     $failo_vieta = htmlspecialchars($row['failo_vieta']);
     $slapyvardis = htmlspecialchars($row['slapyvardis']);
     $konkursas_id = htmlspecialchars($row['fk_Konkursasid']);
+    $ikelejo_uid = htmlspecialchars($row['uid']);
 } else {
     echo "Klaida skaitant paveikslo informaciją.";
     mysqli_close($db);
     exit;
+}
+$sql = "SELECT vertinimo_pradzia FROM " . TBL_KONKURSAS . " WHERE id = $konkursas_id";
+$result = mysqli_query($db, $sql);
+if ($result && mysqli_num_rows($result) > 0) {
+    $row = mysqli_fetch_assoc($result);
+    $vertinimo_pradzia = $row['vertinimo_pradzia'];
 }
 ?>
 <html>
@@ -91,28 +99,14 @@ if ($result && mysqli_num_rows($result) > 0) {
     ?>
     <img src="../<?php echo $failo_vieta; ?>" alt="<?php echo $pavadinimas; ?>"
         style="max-width:1000px; max-height:400px;">
-    <?php
-    if ($_SESSION['ulevel'] == $user_roles['Vertintojas']) {
-        echo '<form action="vertinti_paveiksla.php" method="post">
-                <input type="hidden" name="paveikslas_id" value="' . $paveikslas_id . '">
-                <label for="kompozicija">Kompozicija (1-10):</label>
-                <input type="number" id="kompozicija" name="kompozicija" min="1" max="10" required>
-                <label for="spalvingumas">Spalvingumas (1-10):</label>
-                <input type="number" id="spalvingumas" name="spalvingumas" min="1" max="10" required>
-                <label for="temos_atitikimas">Temos atitikimas (1-10):</label>
-                <input type="number" id="temos_atitikimas" name="temos_atitikimas" min="1" max="10" required>
-                <input type="submit" value="Įvertinti">
-              </form>';
-    }
-    ?>
     <form action="komentuoti_paveiksla.php" method="post">
         <input type="hidden" name="paveikslas_id" value="<?php echo $paveikslas_id; ?>">
         <label for="komentaras">Palikti komentarą:</label><br>
-        <textarea id="komentaras" name="komentaras" rows="4" cols="50" style="width:70%" required></textarea><br>
+        <textarea id="komentaras" name="komentaras" rows="2" cols="50" style="width:30%" required></textarea><br>
         <?php
         if ($_SESSION['ulevel'] == $user_roles['Svecias']) {
             echo '<label for="autorius">Vardas:</label><br>';
-            echo '<input type="text" id="autorius" style="width:70%" name="autorius"><br>';
+            echo '<input type="text" id="autorius" style="width:30%" name="autorius"><br>';
         }
         ?>
         <input type="submit" value="Komentuoti">
@@ -132,6 +126,9 @@ if ($result && mysqli_num_rows($result) > 0) {
         }
     } else {
         echo "<p>Šiam paveikslui nėra komentarų.</p>";
+    }
+    if($ikelejo_uid == $_SESSION['userid'] && $vertinimo_pradzia > date('Y-m-d H:i:s')) {
+        echo "<a style=\"color:red;\" href=\"trinti_paveiksla.php?id=" . $paveikslas_id . "&konkursas_id=" . $konkursas_id . "\">Ištrinti paveikslą</a><br>";
     }
     mysqli_close($db);
     ?>

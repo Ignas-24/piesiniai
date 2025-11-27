@@ -40,7 +40,7 @@ $_SESSION['prev'] = "ikelimas";
 	?>
 	<h3>Pasirinkti galeriją</h3>
 	<?php
-
+	$konkursas_id = $_GET['konkursas_id'] ?? '';
 
 	$db = mysqli_connect(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
 	if (mysqli_connect_errno()) {
@@ -49,9 +49,9 @@ $_SESSION['prev'] = "ikelimas";
 	}
 	$sql = "SELECT id, pavadinimas FROM " . TBL_KONKURSAS . " 
 	WHERE
-    " . TBL_KONKURSAS . ".pabaiga > NOW()
+    " . TBL_KONKURSAS . ".vertinimo_pradzia > NOW()
     AND
-    " . TBL_KONKURSAS . ".pradzia < NOW()
+    " . TBL_KONKURSAS . ".ikelimo_pradzia < NOW()
 	ORDER BY pavadinimas";
 	$result = mysqli_query($db, $sql); {
 		if (!$result) {
@@ -71,7 +71,8 @@ $_SESSION['prev'] = "ikelimas";
 					while ($row = mysqli_fetch_assoc($result)) {
 						$id = (int) $row['id'];
 						$pavadinimas = htmlspecialchars($row['pavadinimas'], ENT_QUOTES, 'UTF-8');
-						echo "<option value=\"{$id}\">{$pavadinimas}</option>";
+						$selected = ((int)$konkursas_id === $id) ? ' selected' : '';
+						echo "<option value=\"{$id}\"{$selected}>{$pavadinimas}</option>";
 					}
 					?>
 				</select>

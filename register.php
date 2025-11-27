@@ -69,11 +69,13 @@ $_SESSION['prev'] = "register";
 										echo "<p style=\"text-align:left;\">Rolė<br>";
 										echo "<select name=\"role\">";
 										foreach ($user_roles as $x => $x_value) {
-											echo "<option ";
-											if ($x == DEFAULT_LEVEL)
-												echo "selected ";
-											echo "value=\"" . $x_value . "\" ";
-											echo ">" . $x . "</option></p>";
+											if ($x != "Svecias") {
+												echo "<option ";
+												if ($x == DEFAULT_LEVEL)
+													echo "selected ";
+												echo "value=\"" . $x_value . "\" ";
+												echo ">" . $x . "</option></p>";
+											}
 										}
 									}
 									?>

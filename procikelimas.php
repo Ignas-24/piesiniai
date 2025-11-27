@@ -45,7 +45,7 @@ if ($konkursas === '') {
 $uploadBase = __DIR__ . '/uploads';
 $uploadDir = $uploadBase . '/' . $konkursas;
 if (!is_dir($uploadDir)) {
-    if (!mkdir($uploadDir, 0755, true)) {
+    if (!mkdir($uploadDir, 0777, true)) {
         echo "Nepavyko sukurti aplanko įkėlimams.";
         exit;
     }
@@ -61,7 +61,7 @@ if (!is_uploaded_file($file['tmp_name']) || !move_uploaded_file($file['tmp_name'
     exit;
 }
 
-// @chmod($destination, 0644);
+@chmod($destination, 0777);
 
 $relativePath = 'uploads/' . $konkursas . '/' . $filename;
 

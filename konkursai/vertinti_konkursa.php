@@ -2,26 +2,31 @@
 session_start();
 if (
     !isset($_SESSION['prev']) || (($_SESSION['prev'] != "konkursai") &&
-        ($_SESSION['prev'] != "konkursai/perziureti_konkursa") && ($_SESSION['prev'] != "konkursai/perziureti_paveiksla") && ($_SESSION['prev'] != "konkursai/proctrinti_paveiksla"))
+        ($_SESSION['prev'] != "konkursai/vertinti_konkursa") && ($_SESSION['prev'] != "konkursai/vertinti_paveiksla"))
 ) {
     header("Location: ../logout.php");
     exit;
 }
-
 include("../include/nustatymai.php");
+if($_SESSION['ulevel'] != $user_roles["Vertintojas"]){
+    header("Location: ../konkursai.php");
+    exit;
+}
 
-$_SESSION['prev'] = "konkursai/perziureti_konkursa";
+
+$_SESSION['prev'] = "konkursai/vertinti_konkursa";
 $db = mysqli_connect(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
 if (!$db) {
     echo "Negaliu prisijungti prie DB";
     exit;
 }
 ?>
+<!DOCTYPE html>
 <html>
 
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=9; text/html; charset=utf-8">
-    <title>Peržiūrėti konkursą</title>
+    <title>Vertinti konkursą</title>
     <link href="../include/styles.css" rel="stylesheet" type="text/css">
 </head>
 
@@ -52,7 +57,13 @@ if (!$db) {
         echo "Nenurodytas konkursas.";
         exit;
     }
-
+    $msg = $_GET['msg'] ?? '';
+    if(!empty($msg)) {
+        $vertintas_paveikslas_id = $_GET['vertintas'] ?? '';
+        if(!empty($vertintas_paveikslas_id)) {
+            echo "<p style='color:green;'>Paveikslas sėkmingai įvertintas.</p>";
+        }
+    }
     $sql = "SELECT pavadinimas, aprasas, ikelimo_pradzia, vertinimo_pradzia, vertinimo_pabaiga FROM " . TBL_KONKURSAS . " WHERE id = $konkursas_id";
     $result = mysqli_query($db, $sql);
     if ($result && mysqli_num_rows($result) > 0) {
@@ -60,19 +71,12 @@ if (!$db) {
         echo "<h3>" . htmlspecialchars($row['pavadinimas']) . "</h3>";
         echo "<b>Aprašas:</b> " . nl2br(htmlspecialchars($row['aprasas'])) . "<br>";
         echo "<b>Įkėlimo pradžia:</b> " . htmlspecialchars($row['ikelimo_pradzia']) . "<br>";
-        $vertinimo_pradzia = htmlspecialchars($row['vertinimo_pradzia']);
-        echo "<b>Vertinimo pradžia:</b>$vertinimo_pradzia<br>";
+        echo "<b>Vertinimo pradžia:</b> " . htmlspecialchars($row['vertinimo_pradzia']) . "<br>";
         echo "<b>Vertinimo pabaiga:</b> " . htmlspecialchars($row['vertinimo_pabaiga']) . "<br>";
     } else {
         echo "Klaida skaitant konkurso informaciją.";
         mysqli_close($db);
         exit;
-    }
-    if ($vertinimo_pradzia > date('Y-m-d H:i:s')) {
-        $vertinimu_kiekis = 0;
-    }
-    else{
-        $vertinimu_kiekis = 5;
     }
     $sql = "SELECT p.id,
        p.pavadinimas,
@@ -88,7 +92,6 @@ if (!$db) {
         WHERE p.fk_Konkursasid = $konkursas_id
         GROUP BY p.id, p.pavadinimas, p.komentaras,
                 p.ikelimo_data, p.failo_vieta, v.slapyvardis
-        HAVING COUNT(ve.id) >= $vertinimu_kiekis
         ORDER BY p.ikelimo_data DESC";
     $result = mysqli_query($db, $sql);
     if (!$result) {
@@ -96,7 +99,7 @@ if (!$db) {
         exit;
     }
     if (mysqli_num_rows($result) < 1) {
-        echo "<p>Šiame konkurse nėra paveikslų, kurie atitinka reikalavimus.</p>";
+        echo "<p>Šiame konkurse nėra paveikslų.</p>";
         mysqli_close($db);
         exit;
     }
@@ -108,6 +111,7 @@ if (!$db) {
     <th>Komentaras</th>
     <th>Įkėlimo data</th>
     <th>Įkėlė</th>
+    <th>Vertinimas</th>
     </tr>";
     while ($row = mysqli_fetch_assoc($result)) {
         $paveikslas_id = $row['id'];
@@ -117,14 +121,29 @@ if (!$db) {
         $slapyvardis = htmlspecialchars($row['slapyvardis']);
         $failo_vieta = htmlspecialchars($row['failo_vieta']);
         echo "<tr>
-        <td><center><a href=\"../konkursai/perziureti_paveiksla.php?id=" . $paveikslas_id . "\"><img src=\"../" . $failo_vieta . "\" alt=\""
-            . $pavadinimas . "\" style=\"max-width:1000px; max-height:400px;\"></a></center></td>
+        <td><center><img src=\"../" . $failo_vieta . "\" alt=\""
+            . $pavadinimas . "\" style=\"max-width:1000px; max-height:400px;\"></center></td>
         <td>" . $pavadinimas . "</td>
         <td>" . $komentaras . "</td>
         <td>" . $ikelimo_data . "</td>
         <td>" . $slapyvardis . "</td>
-        </tr>";
+        <td>
+        <form action=\"vertinti_paveiksla.php\" method=\"post\">
+            <input type=\"hidden\" name=\"paveikslas_id\" value=\"" . $paveikslas_id . "\"> 
+            <input type=\"hidden\" name=\"konkursas_id\" value=\"" . $konkursas_id . "\">
+            <label for=\"kompozicija_" . $paveikslas_id . "\">Kompozicija:</label>
+            <input type=\"number\" id=\"kompozicija_" . $paveikslas_id . "\" name=\"kompozicija\" min=\"1\" max=\"10\" required style=\"width:60px\"><br>
+            <label for=\"spalvingumas_" . $paveikslas_id . "\">Spalvingumas:</label>
+            <input type=\"number\" id=\"spalvingumas_" . $paveikslas_id . "\" name=\"spalvingumas\" min=\"1\" max=\"10\" required style=\"width:60px\"><br>
+            <label for=\"temos_atitikimas_" . $paveikslas_id . "\">Temos atitikimas:</label>
+            <input type=\"number\" id=\"temos_atitikimas_" . $paveikslas_id . "\" name=\"temos_atitikimas\" min=\"1\" max=\"10\" required style=\"width:60px\"><br>
+            <input type=\"submit\" value=\"Įvertinti\">
+        </form>
+        </td>";
+
     }
+    echo "</tr>";
+
     echo "</table></center>";
     mysqli_close($db);
     ?>

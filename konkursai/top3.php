@@ -39,7 +39,7 @@ GROUP BY
     p.id, p.pavadinimas
 ORDER BY 
     bendras_vidurkis DESC,
-    vart.gimtadienis DESC
+    p.ikelimo_data ASC
 LIMIT 3;";
 
 $result = mysqli_query($db, $sql);

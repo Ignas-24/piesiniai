@@ -16,38 +16,54 @@ if (!$db) {
     exit;
 }
 
-// Handle form submission
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // require logged in user id
     $userid = $_SESSION['userid'] ?? '';
     if (empty($userid)) {
         header("Location: ../logout.php");
         exit;
     }
+    //double check
+    $sql = "SELECT COUNT(*) AS VERTINTOJAI FROM " . TBL_USERS . " WHERE role=" . $user_roles['Vertintojas'];
+    $result = mysqli_query($db, $sql);
+    if (!$result) {
+        echo "Klaida skaitant lentelę vertintojai";
+        exit;
+    }
+    $row = mysqli_fetch_assoc($result);
+    $vertintojai = $row['VERTINTOJAI'];
+    if($vertintojai<5){
+        header("Location: ../konkursu_valdymas.php");
+        exit;
+    }
 
     $pavadinimas = trim($_POST['pavadinimas'] ?? '');
     $aprasas = trim($_POST['aprasas'] ?? '');
-    $pradzia = trim($_POST['pradzia'] ?? '');
-    $pabaiga = trim($_POST['pabaiga'] ?? '');
+    $ikelimo_pradzia = trim($_POST['ikelimo_pradzia'] ?? '');
+    $vertinimo_pradzia = trim($_POST['vertinimo_pradzia'] ?? '');
+    $vertinimo_pabaiga = trim($_POST['vertinimo_pabaiga'] ?? '');
 
     $errors = [];
 
     if ($pavadinimas === '')
         $errors[] = "Pavadinimas privalomas.";
-    // validate dates YYYY-MM-DD
-    $d1 = DateTime::createFromFormat('Y-m-d', $pradzia);
-    $d2 = DateTime::createFromFormat('Y-m-d', $pabaiga);
+    // validate dates YYYY-MM-DD HH:MM
+    $d1 = DateTime::createFromFormat('Y-m-d\TH:i', $ikelimo_pradzia);
+    $d2 = DateTime::createFromFormat('Y-m-d\TH:i', $vertinimo_pradzia);
+    $d3 = DateTime::createFromFormat('Y-m-d\TH:i', $vertinimo_pabaiga);
     if (!$d1)
-        $errors[] = "Netinkama pradžios data.";
+        $errors[] = "Netinkama įkėlimo pradžios data.";
     if (!$d2)
-        $errors[] = "Netinkama pabaigos data.";
-    if ($d1 && $d2 && $d2 < $d1)
+        $errors[] = "Netinkama vertinimo pradžios data.";
+    if(!$d3)
+        $errors[] = "Netinkama vertinimo pabaigos data.";
+    if ($d1 && $d2 && $d3 && ($d2 < $d1 || $d3 < $d2))
         $errors[] = "Pabaigos data negali būti anksčiau už pradžią.";
 
     if (empty($errors)) {
-        $stmt = mysqli_prepare($db, "INSERT INTO " . TBL_KONKURSAS . " (pavadinimas, aprasas, pradzia, pabaiga, fk_Vartotojasuid) VALUES (?, ?, ?, ?, ?)");
+        $stmt = mysqli_prepare($db, "INSERT INTO " . TBL_KONKURSAS . " (pavadinimas, aprasas, ikelimo_pradzia, vertinimo_pradzia, vertinimo_pabaiga, fk_Vartotojasuid) VALUES (?, ?, ?, ?, ?, ?)");
         if ($stmt) {
-            mysqli_stmt_bind_param($stmt, "sssss", $pavadinimas, $aprasas, $pradzia, $pabaiga, $userid);
+            mysqli_stmt_bind_param($stmt, "ssssss", $pavadinimas, $aprasas, $ikelimo_pradzia, $vertinimo_pradzia, $vertinimo_pabaiga, $userid);
             $ok = mysqli_stmt_execute($stmt);
             mysqli_stmt_close($stmt);
             if ($ok) {
@@ -96,13 +112,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <textarea name="aprasas" rows="6"
                 class="s1"><?php echo htmlspecialchars($aprasas ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
         </p>
-        <p>Pradžia:<br>
-            <input type="date" name="pradzia" class="s1"
-                value="<?php echo htmlspecialchars($pradzia ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+        <p>Įkėlimo pradžia:<br>
+            <input type="datetime-local" name="ikelimo_pradzia" class="s1"
+                value="<?php echo htmlspecialchars($ikelimo_pradzia ?? '', ENT_QUOTES, 'UTF-8'); ?>">
         </p>
-        <p>Pabaiga:<br>
-            <input type="date" name="pabaiga" class="s1"
-                value="<?php echo htmlspecialchars($pabaiga ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+        <p>Vertinimo pradžia:<br>
+            <input type="datetime-local" name="vertinimo_pradzia" class="s1"
+                value="<?php echo htmlspecialchars($vertinimo_pradzia ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+        </p>
+        <p>Vertinimo pabaiga:<br>
+            <input type="datetime-local" name="vertinimo_pabaiga" class="s1"
+                value="<?php echo htmlspecialchars($vertinimo_pabaiga ?? '', ENT_QUOTES, 'UTF-8'); ?>">
         </p>
         <p><input type="submit" value="Pridėti konkursą"></p>
     </form>
