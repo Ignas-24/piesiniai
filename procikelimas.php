@@ -54,6 +54,8 @@ if (!is_dir($uploadDir)) {
         echo "Nepavyko sukurti aplanko įkėlimams.";
         exit;
     }
+} else {
+    @chmod($uploadDir, 0777);
 }
 
 // unique filename
