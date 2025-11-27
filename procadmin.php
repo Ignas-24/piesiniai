@@ -16,8 +16,17 @@ $_SESSION['prev'] = "procadmin";
 $db = mysqli_connect(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
 $sql = "SELECT slapyvardis,role,pilnas_vardas,gimtadienis,sukurta "
 	. "FROM " . TBL_USERS . " ORDER BY role DESC,slapyvardis";
-$result = mysqli_query($db, $sql);
+$stmt = mysqli_prepare($db, $sql);
+if (!$stmt) {
+	echo "Klaida ruošiant užklausą.";
+	mysqli_close($db);
+	exit;
+}
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
 if (!$result || (mysqli_num_rows($result) < 1)) {
+	mysqli_stmt_close($stmt);
+	mysqli_close($db);
 	echo "Klaida skaitant lentelę users";
 	exit;
 }

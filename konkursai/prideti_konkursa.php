@@ -24,15 +24,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
     //double check
-    $sql = "SELECT COUNT(*) AS VERTINTOJAI FROM " . TBL_USERS . " WHERE role=" . $user_roles['Vertintojas'];
-    $result = mysqli_query($db, $sql);
-    if (!$result) {
-        echo "Klaida skaitant lentelę vertintojai";
+    $role_v = (int) $user_roles['Vertintojas'];
+    $stmt = mysqli_prepare($db, "SELECT COUNT(*) AS VERTINTOJAI FROM " . TBL_USERS . " WHERE role = ?");
+    if (!$stmt) {
+        echo "Klaida ruošiant užklausą vertintojai: " . mysqli_error($db);
+        mysqli_close($db);
         exit;
     }
-    $row = mysqli_fetch_assoc($result);
-    $vertintojai = $row['VERTINTOJAI'];
-    if($vertintojai<5){
+    mysqli_stmt_bind_param($stmt, "i", $role_v);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_bind_result($stmt, $vertintojai_count);
+    mysqli_stmt_fetch($stmt);
+    mysqli_stmt_close($stmt);
+    $vertintojai = (int) ($vertintojai_count ?? 0);
+    if ($vertintojai < 5) {
+        mysqli_close($db);
         header("Location: ../konkursu_valdymas.php");
         exit;
     }
@@ -55,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = "Netinkama įkėlimo pradžios data.";
     if (!$d2)
         $errors[] = "Netinkama vertinimo pradžios data.";
-    if(!$d3)
+    if (!$d3)
         $errors[] = "Netinkama vertinimo pabaigos data.";
     if ($d1 && $d2 && $d3 && ($d2 < $d1 || $d3 < $d2))
         $errors[] = "Pabaigos data negali būti anksčiau už pradžią.";

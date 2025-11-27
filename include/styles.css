@@ -6,20 +6,24 @@
   --text: #1f2937;
   --muted: #6b7280;
   --accent: #5b6cf0;
-  --shadow: 0 2px 10px rgba(0,0,0,.06);
+  --shadow: 0 2px 10px rgba(0, 0, 0, .06);
 }
 
 *,
 *::before,
-*::after { box-sizing: border-box; }
+*::after {
+  box-sizing: border-box;
+}
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
 }
 
 body {
-  text-align: center; /* keep existing behavior */
+  text-align: center;
+  /* keep existing behavior */
   font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
   color: var(--text);
   background: var(--bg);
@@ -30,12 +34,16 @@ a {
   color: var(--accent);
   text-decoration: none;
 }
-a:hover { text-decoration: underline; }
+
+a:hover {
+  text-decoration: underline;
+}
 
 /* Generic table “card” */
 table.center {
   margin: 16px auto;
-  border: none;                 /* override legacy HTML border attr */
+  border: none;
+  /* override legacy HTML border attr */
   border-collapse: collapse;
   border-spacing: 0;
   width: min(1000px, 92%);
@@ -43,7 +51,8 @@ table.center {
   border: 1px solid var(--border);
   border-radius: 10px;
   box-shadow: var(--shadow);
-  overflow: hidden;             /* rounds inner borders */
+  overflow: hidden;
+  /* rounds inner borders */
 }
 
 table.center th,
@@ -52,7 +61,11 @@ table.center td {
   padding: 10px 14px;
   border-bottom: 1px solid var(--border);
 }
-table.center tr:last-child td { border-bottom: 0; }
+
+table.center tr:last-child td {
+  border-bottom: 0;
+}
+
 table.center th {
   background: #f7f9fc;
   color: var(--muted);
@@ -69,7 +82,9 @@ table.meniu {
   border-collapse: separate;
   border-spacing: 0;
 }
-table.meniu td, table.meniu th {
+
+table.meniu td,
+table.meniu th {
   padding: 8px 12px;
 }
 
@@ -79,7 +94,8 @@ table.backlink {
   background: #f9fafb;
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 4px 8px; /* visual padding; tables ignore padding but kept for compatibility */
+  padding: 4px 8px;
+  /* visual padding; tables ignore padding but kept for compatibility */
 }
 
 /* Forms */
@@ -94,7 +110,14 @@ form.login {
 }
 
 /* Inputs */
-input.s1, textarea.s1, select.s1, select, textarea, input[type="text"], input[type="password"], input[type="date"] {
+input.s1,
+textarea.s1,
+select.s1,
+select,
+textarea,
+input[type="text"],
+input[type="password"],
+input[type="date"] {
   width: 100%;
   font-size: 16px;
   line-height: 1.4;
@@ -107,14 +130,22 @@ input.s1, textarea.s1, select.s1, select, textarea, input[type="text"], input[ty
   transition: border-color .15s ease, box-shadow .15s ease;
 }
 
-input.s1:focus, textarea.s1:focus, select.s1:focus,
-input[type="text"]:focus, input[type="password"]:focus, input[type="date"]:focus, textarea:focus, select:focus {
+input.s1:focus,
+textarea.s1:focus,
+select.s1:focus,
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="date"]:focus,
+textarea:focus,
+select:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(91,108,240,.15);
+  box-shadow: 0 0 0 3px rgba(91, 108, 240, .15);
 }
 
 /* Buttons */
-button, input[type="submit"], .btn {
+button,
+input[type="submit"],
+.btn {
   display: inline-block;
   background: var(--accent);
   color: #fff;
@@ -125,15 +156,34 @@ button, input[type="submit"], .btn {
   cursor: pointer;
   transition: filter .15s ease, transform .02s ease;
 }
-button:hover, input[type="submit"]:hover, .btn:hover { filter: brightness(1.05); }
-button:active, input[type="submit"]:active, .btn:active { transform: translateY(1px); }
-button[disabled], input[type="submit"][disabled], .btn[disabled] {
+
+button:hover,
+input[type="submit"]:hover,
+.btn:hover {
+  filter: brightness(1.05);
+}
+
+button:active,
+input[type="submit"]:active,
+.btn:active {
+  transform: translateY(1px);
+}
+
+button[disabled],
+input[type="submit"][disabled],
+.btn[disabled] {
   opacity: .6;
   cursor: not-allowed;
 }
 
 /* Images */
-img { max-width: 100%; height: auto; display: inline-block; }
+img {
+  max-width: 100%;
+  height: auto;
+  display: inline-block;
+}
 
 /* Utilities (optional) */
-.muted { color: var(--muted); }
+.muted {
+  color: var(--muted);
+}

@@ -2,12 +2,14 @@
 // guest.php
 // nustato user="guest", userlevel=""
 
-session_start(); 
+session_start();
 // cia sesijos kontrole:
-  if (!isset($_SESSION['prev']) || ($_SESSION['prev'] != "login"))
-	{ header("Location: logout.php");exit;}
-  $_SESSION['prev'] = "guest";
-  $_SESSION['user'] = "guest";
-  $_SESSION['ulevel'] =0;
-header("Location:index.php");exit;
- 
+if (!isset($_SESSION['prev']) || ($_SESSION['prev'] != "login")) {
+  header("Location: logout.php");
+  exit;
+}
+$_SESSION['prev'] = "guest";
+$_SESSION['user'] = "guest";
+$_SESSION['ulevel'] = 0;
+header("Location:index.php");
+exit;

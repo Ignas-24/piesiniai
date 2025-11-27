@@ -45,13 +45,23 @@ if (checkname($user)) { // vardas  geras,  nuskaityti vartotoja is DB
         $ulevel = $user_roles[DEFAULT_LEVEL];
 
       $db = mysqli_connect(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
-      $sql = "INSERT INTO " . TBL_USERS . " (uid, slapyvardis, slaptazodis, pilnas_vardas, gimtadienis, sukurta, role)
-          VALUES ('$userid', '$user', '$pass', '$fullname', '$birthday', NOW(), '$ulevel')";
-
-      if (mysqli_query($db, $sql)) {
-        $_SESSION['message'] = "Registracija sėkminga";
+      if (!$db) {
+        $_SESSION['message'] = "DB ryšio klaida.";
       } else {
-        $_SESSION['message'] = "DB registracijos klaida:" . $sql . "<br>" . mysqli_error($db);
+        $stmt = mysqli_prepare($db, "INSERT INTO " . TBL_USERS . " (uid, slapyvardis, slaptazodis, pilnas_vardas, gimtadienis, sukurta, role) VALUES (?, ?, ?, ?, ?, NOW(), ?)");
+        if ($stmt) {
+          $ulevel_int = (int) $ulevel;
+          mysqli_stmt_bind_param($stmt, "sssss i", $userid, $user, $pass, $fullname, $birthday, $ulevel_int);
+          if (mysqli_stmt_execute($stmt)) {
+            $_SESSION['message'] = "Registracija sėkminga";
+          } else {
+            $_SESSION['message'] = "DB registracijos klaida: " . mysqli_stmt_error($stmt);
+          }
+          mysqli_stmt_close($stmt);
+        } else {
+          $_SESSION['message'] = "Klaida ruošiant užklausą: " . mysqli_error($db);
+        }
+        mysqli_close($db);
       }
 
       // uzregistruotas

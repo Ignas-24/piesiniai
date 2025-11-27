@@ -40,10 +40,15 @@ if ($konkursas === '') {
     echo "Nepasirinktas konkursas.";
     exit;
 }
+$konkursas_id = (int) $konkursas;
+if ($konkursas_id <= 0) {
+    echo "Neteisingas konkurso identifikatorius.";
+    exit;
+}
 
 // prepare upload directory
 $uploadBase = __DIR__ . '/uploads';
-$uploadDir = $uploadBase . '/' . $konkursas;
+$uploadDir = $uploadBase . '/' . $konkursas_id;
 if (!is_dir($uploadDir)) {
     if (!mkdir($uploadDir, 0777, true)) {
         echo "Nepavyko sukurti aplanko įkėlimams.";
@@ -63,23 +68,33 @@ if (!is_uploaded_file($file['tmp_name']) || !move_uploaded_file($file['tmp_name'
 
 @chmod($destination, 0777);
 
-$relativePath = 'uploads/' . $konkursas . '/' . $filename;
+$relativePath = 'uploads/' . $konkursas_id . '/' . $filename;
 
 $db = mysqli_connect(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
 if (!$db) {
+    @unlink($destination);
     echo "DB ryšio klaida.";
     exit;
 }
 
-$uploader = $_SESSION['userid'] ?? null;
-$sql = "INSERT INTO " . TBL_PAVEIKSLAS . " (pavadinimas, komentaras, ikelimo_data, failo_vieta, fk_Vartotojasuid, fk_Konkursasid)
- VALUES ('$pavadinimas', '$komentaras', NOW(), '$relativePath', '$uploader', '$konkursas')";
-$ok = mysqli_query($db, $sql);
-if (!$ok) {
-    echo "Klaida įrašant į DB: " . mysqli_error($db);
+$uploader = $_SESSION['userid'] ?? '';
+
+$stmt = mysqli_prepare($db, "INSERT INTO " . TBL_PAVEIKSLAS . " (pavadinimas, komentaras, ikelimo_data, failo_vieta, fk_Vartotojasuid, fk_Konkursasid) VALUES (?, ?, NOW(), ?, ?, ?)");
+if (!$stmt) {
     @unlink($destination);
+    echo "Klaida ruošiant užklausą: " . mysqli_error($db);
+    mysqli_close($db);
     exit;
 }
+mysqli_stmt_bind_param($stmt, "ssssi", $pavadinimas, $komentaras, $relativePath, $uploader, $konkursas_id);
+if (!mysqli_stmt_execute($stmt)) {
+    @unlink($destination);
+    echo "Klaida įrašant į DB: " . mysqli_stmt_error($stmt);
+    mysqli_stmt_close($stmt);
+    mysqli_close($db);
+    exit;
+}
+mysqli_stmt_close($stmt);
 mysqli_close($db);
 
 header("Location: ikelimas.php?msg=ok");

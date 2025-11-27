@@ -14,8 +14,8 @@ function inisession($arg)
 	$_SESSION['pass_login'] = "";
 	$_SESSION['name_error'] = "";
 	$_SESSION['pass_error'] = "";
-	$_SESSION['fullname_login']="";
-	$_SESSION['birthday_login']="";
+	$_SESSION['fullname_login'] = "";
+	$_SESSION['birthday_login'] = "";
 
 }
 
@@ -59,21 +59,37 @@ function checkpass($pwd, $dbpwd)
 
 function checkdb($username)
 {  // iesko DB pagal varda, grazina {vardas,slaptazodis,lygis,id} ir nustato name_error
+	$uname = $upass = $ulevel = $uid = null;
 	$db = mysqli_connect(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
-	$sql = "SELECT * FROM " . TBL_USERS . " WHERE slapyvardis = '$username'";
-	$result = mysqli_query($db, $sql);
-	$uname = $upass = $ulevel = $uid = $umail = null;
-	if (!$result || (mysqli_num_rows($result) != 1))   // jei >1 tai DB vardas kartojasi, netikrinu, imu pirma
-	{  // neradom vartotojo DB
+	if (!$db) {
+		$_SESSION['name_error'] =
+			"<font size=\"2\" color=\"#ff0000\">* Klaida prisijungiant prie duomenų bazės</font>";
+		return array($uname, $upass, $ulevel, $uid);
+	}
+	$stmt = mysqli_prepare($db, "SELECT slapyvardis, slaptazodis, role, uid FROM " . TBL_USERS . " WHERE slapyvardis = ?");
+	if (!$stmt) {
+		$_SESSION['name_error'] =
+			"<font size=\"2\" color=\"#ff0000\">* Klaida ruošiant užklausą</font>";
+		mysqli_close($db);
+		return array($uname, $upass, $ulevel, $uid);
+	}
+	mysqli_stmt_bind_param($stmt, "s", $username);
+	mysqli_stmt_execute($stmt);
+	$res = mysqli_stmt_get_result($stmt);
+	if (!$res || (mysqli_num_rows($res) != 1)) {
 		$_SESSION['name_error'] =
 			"<font size=\"2\" color=\"#ff0000\">* Tokio vartotojo nėra</font>";
-	} else {  //vardas yra DB
-		$row = mysqli_fetch_assoc($result);
-		$uname = $row["slapyvardis"];
-		$upass = $row["slaptazodis"];
-		$ulevel = $row["role"];
-		$uid = $row["uid"];
+		mysqli_stmt_close($stmt);
+		mysqli_close($db);
+		return array($uname, $upass, $ulevel, $uid);
 	}
+	$row = mysqli_fetch_assoc($res);
+	$uname = $row["slapyvardis"];
+	$upass = $row["slaptazodis"];
+	$ulevel = $row["role"];
+	$uid = $row["uid"];
+	mysqli_stmt_close($stmt);
+	mysqli_close($db);
 	return array($uname, $upass, $ulevel, $uid);
 }
 

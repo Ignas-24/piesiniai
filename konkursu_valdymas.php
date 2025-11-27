@@ -43,18 +43,23 @@ $_SESSION['prev'] = "konkursu_valdymas";
 			<td colspan="5">
 				<?php
 				$db = mysqli_connect(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
-				$sql = "SELECT COUNT(*) AS VERTINTOJAI FROM " . TBL_USERS . " WHERE role=" . $user_roles['Vertintojas'];
-				$result = mysqli_query($db, $sql);
-				if (!$result) {
+				$sql = "SELECT COUNT(*) AS VERTINTOJAI FROM " . TBL_USERS . " WHERE role = ?";
+				$stmt = mysqli_prepare($db, $sql);
+				if (!$stmt) {
 					echo "Klaida skaitant lentelę vertintojai";
+					mysqli_close($db);
 					exit;
 				}
-				$row = mysqli_fetch_assoc($result);
-				$vertintojai = $row['VERTINTOJAI'];
-				if($vertintojai>=5){
+				$role_v = (int) $user_roles['Vertintojas'];
+				mysqli_stmt_bind_param($stmt, "i", $role_v);
+				mysqli_stmt_execute($stmt);
+				mysqli_stmt_bind_result($stmt, $vertintojai_count);
+				mysqli_stmt_fetch($stmt);
+				mysqli_stmt_close($stmt);
+				$vertintojai = (int) ($vertintojai_count ?? 0);
+				if ($vertintojai >= 5) {
 					echo '<center><a href="konkursai/prideti_konkursa.php">Pridėti konkursą</a></center>';
-				}
-				else{
+				} else {
 					echo '<center>Norint pridėti konkursą, reikia turėti bent 5 vertintojus</center>';
 				}
 				?>
@@ -70,8 +75,17 @@ $_SESSION['prev'] = "konkursu_valdymas";
 		<?php
 
 		$sql = "SELECT id, pavadinimas, ikelimo_pradzia, vertinimo_pradzia, vertinimo_pabaiga FROM " . TBL_KONKURSAS . " ORDER BY ikelimo_pradzia DESC";
-		$result = mysqli_query($db, $sql);
+		$stmt = mysqli_prepare($db, $sql);
+		if (!$stmt) {
+			echo "Klaida skaitant lentelę konkursai";
+			mysqli_close($db);
+			exit;
+		}
+		mysqli_stmt_execute($stmt);
+		$result = mysqli_stmt_get_result($stmt);
 		if (!$result) {
+			mysqli_stmt_close($stmt);
+			mysqli_close($db);
 			echo "Klaida skaitant lentelę konkursai";
 			exit;
 		}
@@ -85,6 +99,7 @@ $_SESSION['prev'] = "konkursu_valdymas";
 			echo "<td><a href=\"konkursai/trinti_konkursa.php?id=" . $id . "\">Trinti</a></td></tr>";
 
 		}
+		mysqli_stmt_close($stmt);
 		mysqli_close($db);
 
 		?>
