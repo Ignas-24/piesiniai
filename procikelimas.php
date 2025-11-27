@@ -62,13 +62,14 @@ if (!is_dir($uploadDir)) {
 $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
 $filename = bin2hex(random_bytes(10)) . '.' . $ext;
 $destination = $uploadDir . '/' . $filename;
-
+@touch($destination);
+@chmod($destination, 0777);
 if (!is_uploaded_file($file['tmp_name']) || !move_uploaded_file($file['tmp_name'], $destination)) {
     echo "Nepavyko išsaugoti įkelto failo.";
     exit;
 }
 
-@chmod($destination, 0777);
+
 
 $relativePath = 'uploads/' . $konkursas_id . '/' . $filename;
 
