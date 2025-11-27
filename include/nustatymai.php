@@ -1,9 +1,9 @@
 <?php
 //nustatymai.php
-define("DB_SERVER", "localhost");
-define("DB_USER", "stud");
-define("DB_PASS", "stud");
-define("DB_NAME", "piesiniai");
+define("DB_SERVER", getenv('DB_HOST') ?: "db");
+define("DB_USER", getenv('DB_USER') ?: "stud");
+define("DB_PASS", getenv('DB_PASS') ?: "stud");
+define("DB_NAME", getenv('DB_NAME') ?: "piesiniai");
 define("TBL_USERS", "vartotojas");
 define("TBL_KONKURSAS", "konkursas");
 define("TBL_PAVEIKSLAS", "paveikslas");

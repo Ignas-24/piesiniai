@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Nov 13, 2025 at 10:57 PM
+-- Generation Time: Nov 27, 2025 at 09:09 PM
 -- Server version: 8.0.41-0ubuntu0.24.04.1
 -- PHP Version: 8.3.6
 
@@ -41,8 +41,7 @@ CREATE TABLE `komentaras` (
 --
 
 INSERT INTO `komentaras` (`id`, `autorius`, `turinys`, `sukurta`, `fk_Paveikslasid`, `fk_Vartotojasuid`) VALUES
-(9, 'naudotojas', 'Labai gražus portretas', '2025-11-13 23:25:31', 8, '57c4455bbe94c48718e58f8c02c96d40'),
-(10, 'Anonimas', 'Puikus piešinys', '2025-11-14 00:21:01', 8, NULL);
+(11, 'naudotojas2', 'Gražu', '2025-11-27 22:26:57', 20, 'e2d71ad7ecb4e4e432a84362deb14522');
 
 -- --------------------------------------------------------
 
@@ -54,8 +53,9 @@ CREATE TABLE `konkursas` (
   `id` int NOT NULL,
   `pavadinimas` varchar(150) NOT NULL,
   `aprasas` text NOT NULL,
-  `pradzia` date NOT NULL,
-  `pabaiga` date NOT NULL,
+  `ikelimo_pradzia` datetime NOT NULL,
+  `vertinimo_pradzia` datetime NOT NULL,
+  `vertinimo_pabaiga` datetime NOT NULL,
   `fk_Vartotojasuid` varchar(32) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
@@ -63,10 +63,12 @@ CREATE TABLE `konkursas` (
 -- Dumping data for table `konkursas`
 --
 
-INSERT INTO `konkursas` (`id`, `pavadinimas`, `aprasas`, `pradzia`, `pabaiga`, `fk_Vartotojasuid`) VALUES
-(11, 'Lietuvos mokylų konkursas', 'Konkursas skirtas Lietuvos mokylų menui demonstruoti', '2025-10-01', '2025-10-31', '0b12e25057898f95e136fdda6baef296'),
-(12, 'KTU konkursas', 'KTU studentų konkursas', '2025-11-01', '2025-11-30', '0b12e25057898f95e136fdda6baef296'),
-(15, 'Konkursas', 'Konkursas ataskaitai', '2025-11-09', '2025-11-15', '0b12e25057898f95e136fdda6baef296');
+INSERT INTO `konkursas` (`id`, `pavadinimas`, `aprasas`, `ikelimo_pradzia`, `vertinimo_pradzia`, `vertinimo_pabaiga`, `fk_Vartotojasuid`) VALUES
+(20, 'Dar neprasidėjęs', 'Dar neprasidėjęs konkursas', '2025-12-03 12:00:00', '2025-12-10 12:00:00', '2025-12-17 12:00:00', '0b12e25057898f95e136fdda6baef296'),
+(21, 'Įkėlime', 'Konkursas į kurį galima įkelti', '2025-11-23 12:10:00', '2025-12-06 06:00:00', '2025-12-13 12:34:00', '0b12e25057898f95e136fdda6baef296'),
+(22, 'Vertinime', 'Konkursas kuriame nuotraukos yra vertinamos', '2025-11-16 10:10:00', '2025-11-23 12:12:00', '2025-12-07 13:13:00', '0b12e25057898f95e136fdda6baef296'),
+(23, 'Pasibaigęs', 'Pasibaigęs konkursas', '2025-11-16 10:10:00', '2025-11-23 10:10:00', '2025-11-25 10:10:00', '0b12e25057898f95e136fdda6baef296'),
+(25, 'Įkėlime 2', 'Antras konkursas įkėlime', '2025-11-23 12:00:00', '2025-11-29 12:00:00', '2025-12-06 12:00:00', '0b12e25057898f95e136fdda6baef296');
 
 -- --------------------------------------------------------
 
@@ -78,7 +80,7 @@ CREATE TABLE `paveikslas` (
   `id` int NOT NULL,
   `pavadinimas` varchar(150) NOT NULL,
   `komentaras` text NOT NULL,
-  `ikelimo_data` date NOT NULL,
+  `ikelimo_data` datetime NOT NULL,
   `failo_vieta` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `fk_Vartotojasuid` varchar(32) NOT NULL,
   `fk_Konkursasid` int NOT NULL
@@ -89,12 +91,20 @@ CREATE TABLE `paveikslas` (
 --
 
 INSERT INTO `paveikslas` (`id`, `pavadinimas`, `komentaras`, `ikelimo_data`, `failo_vieta`, `fk_Vartotojasuid`, `fk_Konkursasid`) VALUES
-(8, 'Gitara', 'Mano gitaros portretas', '2025-11-13', 'uploads/12/1e67a7a321b4f2949d9d.jpg', '0a772568c0eb8ffce02318472f6b6808', 12),
-(9, 'Jaudulys', 'NAILS', '2025-11-13', 'uploads/12/1d394e392e9becf05dde.jpg', '0a772568c0eb8ffce02318472f6b6808', 12),
-(10, 'Saulėgrąžos', 'saulės', '2025-11-13', 'uploads/12/3e21b36ca75ae70281d5.jpg', '57c4455bbe94c48718e58f8c02c96d40', 12),
-(11, 'Naktis', 'naktis su žvaigždėmis', '2025-11-13', 'uploads/12/d262b8fde53fa9243b11.jpg', '57c4455bbe94c48718e58f8c02c96d40', 12),
-(12, 'Laukas', 'takelis per laukelį', '2025-11-13', 'uploads/12/74ec7002e7a3aee283de.png', '57c4455bbe94c48718e58f8c02c96d40', 12),
-(13, 'Gėlės', 'Gėlytės', '2025-11-13', 'uploads/12/dc162e96544a45e78896.jpg', '57c4455bbe94c48718e58f8c02c96d40', 12);
+(19, 'Gėlės', 'Gėlių puokštė', '2025-11-27 20:53:11', 'uploads/21/6c4746882bed6ffd1f3d.jpg', '52ab643e80b5caeb0e77fc2d882aab9e', 21),
+(20, 'Laukas', 'Lauko takelis', '2025-11-27 20:53:25', 'uploads/21/c2ad2832e0dfb4efb3e7.png', '52ab643e80b5caeb0e77fc2d882aab9e', 21),
+(21, 'Naktis', 'nakties piešinys', '2025-11-27 20:53:39', 'uploads/25/bc5860634453e57711be.jpg', '52ab643e80b5caeb0e77fc2d882aab9e', 25),
+(23, 'Saulėgrąžos', 'Saulėgrąžų grąžą', '2025-11-27 20:55:07', 'uploads/25/d65ec2a155b76191f24c.jpg', '52ab643e80b5caeb0e77fc2d882aab9e', 25),
+(24, 'Veidas', 'autoportretas', '2025-11-27 22:22:45', 'uploads/22/76684fcf8ed77f6a0262.png', 'e2d71ad7ecb4e4e432a84362deb14522', 22),
+(25, 'Paveiksliukas', 'gitarprotetas', '2025-11-27 22:23:12', 'uploads/21/36ab29f217d9a3375980.jpg', 'e2d71ad7ecb4e4e432a84362deb14522', 21),
+(26, 'Veidas', 'gitarportretas', '2025-11-27 22:23:46', 'uploads/22/29598c952e9cb4265270.jpg', 'e2d71ad7ecb4e4e432a84362deb14522', 22),
+(27, 'Portretukas', 'mano draugas', '2025-11-27 22:25:00', 'uploads/23/d14ad8b9bf5c68dcf371.png', 'e2d71ad7ecb4e4e432a84362deb14522', 23),
+(29, 'autoportretukas', 'aš', '2025-11-27 22:25:55', 'uploads/23/a39f667d3f3a0a3a277a.jpg', 'e2d71ad7ecb4e4e432a84362deb14522', 23),
+(30, 'Gėlės', 'gėlėlėlėlės', '2025-11-27 22:27:45', 'uploads/22/bc6fd1d55fbd4dd7e185.jpg', '52ab643e80b5caeb0e77fc2d882aab9e', 22),
+(31, 'Antros gėlės', 'ne tokios gražios', '2025-11-27 22:28:01', 'uploads/22/bd0b6df5f8b0f35d1f3a.jpg', '52ab643e80b5caeb0e77fc2d882aab9e', 22),
+(32, 'Dangus', 'naktis', '2025-11-27 22:28:14', 'uploads/23/b34e1dbc32d89435556b.jpg', '52ab643e80b5caeb0e77fc2d882aab9e', 23),
+(33, 'Laukas', 'takas', '2025-11-27 22:28:29', 'uploads/23/59fbd41546d767920c33.png', '52ab643e80b5caeb0e77fc2d882aab9e', 23),
+(34, 'Gėlės', 'Gėlytės', '2025-11-27 22:34:19', 'uploads/23/944dca06410a9c5cefc9.jpg', '52ab643e80b5caeb0e77fc2d882aab9e', 23);
 
 -- --------------------------------------------------------
 
@@ -137,12 +147,14 @@ CREATE TABLE `vartotojas` (
 --
 
 INSERT INTO `vartotojas` (`uid`, `slapyvardis`, `slaptazodis`, `pilnas_vardas`, `gimtadienis`, `sukurta`, `role`) VALUES
-('048f80ef9a8609a386fd69701fb27bf1', 'vertintojas', 'c2acd92812ef99acd3dcdbb746b9a434', 'Vertintojas 1', '2000-04-04', '2025-11-13', 10),
-('0a772568c0eb8ffce02318472f6b6808', 'test', '081884c7d659a2feaa0c55ad015a3bf4', 'test test', '2025-11-12', '2025-11-13', 5),
 ('0b12e25057898f95e136fdda6baef296', 'admin', '6e5b5410415bde908bd4dee15dfb167a', 'admin', '0001-01-01', '0000-01-01', 20),
-('57c4455bbe94c48718e58f8c02c96d40', 'naudotojas', 'c2acd92812ef99acd3dcdbb746b9a434', 'Naudotojas Vienas', '1997-01-01', '2025-11-13', 5),
-('aabf5431577b7006b97afb9aa1908aab', 'stud', 'c2acd92812ef99acd3dcdbb746b9a434', 'studentas studentas', '2004-01-01', '2025-11-14', 5),
-('d863f630baa19b06d7a46ede3107a2a5', 'vertintojas2', 'c2acd92812ef99acd3dcdbb746b9a434', 'vertintojas du', '1977-05-18', '2025-11-13', 10);
+('52ab643e80b5caeb0e77fc2d882aab9e', 'naudotojas', 'c2acd92812ef99acd3dcdbb746b9a434', 'stud', '2004-02-02', '2025-11-27', 5),
+('6a67e334a2dc17299eda01fc263ba31a', 'vertintojas1', 'c2acd92812ef99acd3dcdbb746b9a434', 'Pirmas', '2003-04-04', '2025-11-27', 10),
+('6f21f9e121de9f92158acc64e7ad3d83', 'vertintojas4', 'c2acd92812ef99acd3dcdbb746b9a434', 'ketvirtas', '2000-11-18', '2025-11-27', 10),
+('a30160b83c4e0dfeaeae21c158257c7f', 'vertintojas5', 'c2acd92812ef99acd3dcdbb746b9a434', 'penktas', '1997-10-10', '2025-11-27', 10),
+('e2d71ad7ecb4e4e432a84362deb14522', 'naudotojas2', 'c2acd92812ef99acd3dcdbb746b9a434', 'stud', '1987-04-11', '2025-11-27', 5),
+('e6a8d8d5cfdae4a5b9d28427bd8d5f80', 'vertintojas3', 'c2acd92812ef99acd3dcdbb746b9a434', 'trečias', '1997-12-14', '2025-11-27', 10),
+('fb55008c73cf25c3d1e0bc418e793d43', 'vertintojas2', 'c2acd92812ef99acd3dcdbb746b9a434', 'antras', '2005-12-05', '2025-11-27', 10);
 
 -- --------------------------------------------------------
 
@@ -165,11 +177,29 @@ CREATE TABLE `vertinimas` (
 --
 
 INSERT INTO `vertinimas` (`id`, `kompozicija`, `spalvingumas`, `temos_atitikimas`, `sukurta`, `fk_Paveikslasid`, `fk_Vartotojasuid`) VALUES
-(5, 6, 10, 3, '2025-11-13', 8, '048f80ef9a8609a386fd69701fb27bf1'),
-(6, 10, 6, 8, '2025-11-13', 9, '048f80ef9a8609a386fd69701fb27bf1'),
-(7, 7, 3, 5, '2025-11-13', 8, 'd863f630baa19b06d7a46ede3107a2a5'),
-(8, 10, 5, 5, '2025-11-13', 12, 'd863f630baa19b06d7a46ede3107a2a5'),
-(9, 10, 9, 8, '2025-11-13', 11, 'd863f630baa19b06d7a46ede3107a2a5');
+(13, 5, 5, 5, '2025-11-27', 30, '6a67e334a2dc17299eda01fc263ba31a'),
+(14, 5, 5, 5, '2025-11-27', 33, '6a67e334a2dc17299eda01fc263ba31a'),
+(15, 10, 10, 10, '2025-11-27', 32, '6a67e334a2dc17299eda01fc263ba31a'),
+(16, 5, 5, 5, '2025-11-27', 29, '6a67e334a2dc17299eda01fc263ba31a'),
+(17, 1, 3, 5, '2025-11-27', 27, '6a67e334a2dc17299eda01fc263ba31a'),
+(20, 5, 5, 5, '2025-11-27', 33, 'fb55008c73cf25c3d1e0bc418e793d43'),
+(21, 10, 10, 10, '2025-11-27', 32, 'fb55008c73cf25c3d1e0bc418e793d43'),
+(22, 5, 5, 5, '2025-11-27', 29, 'fb55008c73cf25c3d1e0bc418e793d43'),
+(23, 1, 3, 5, '2025-11-27', 27, 'fb55008c73cf25c3d1e0bc418e793d43'),
+(24, 5, 5, 5, '2025-11-27', 33, 'e6a8d8d5cfdae4a5b9d28427bd8d5f80'),
+(25, 10, 10, 10, '2025-11-27', 32, 'e6a8d8d5cfdae4a5b9d28427bd8d5f80'),
+(26, 5, 5, 5, '2025-11-27', 29, 'e6a8d8d5cfdae4a5b9d28427bd8d5f80'),
+(27, 1, 3, 5, '2025-11-27', 27, 'e6a8d8d5cfdae4a5b9d28427bd8d5f80'),
+(28, 10, 10, 10, '2025-11-27', 34, '6f21f9e121de9f92158acc64e7ad3d83'),
+(29, 5, 5, 5, '2025-11-27', 33, '6f21f9e121de9f92158acc64e7ad3d83'),
+(30, 10, 10, 10, '2025-11-27', 32, '6f21f9e121de9f92158acc64e7ad3d83'),
+(31, 5, 5, 5, '2025-11-27', 29, '6f21f9e121de9f92158acc64e7ad3d83'),
+(32, 6, 4, 8, '2025-11-27', 27, '6f21f9e121de9f92158acc64e7ad3d83'),
+(33, 10, 10, 10, '2025-11-27', 34, 'a30160b83c4e0dfeaeae21c158257c7f'),
+(34, 5, 5, 5, '2025-11-27', 33, 'a30160b83c4e0dfeaeae21c158257c7f'),
+(35, 10, 10, 10, '2025-11-27', 32, 'a30160b83c4e0dfeaeae21c158257c7f'),
+(36, 5, 5, 5, '2025-11-27', 29, 'a30160b83c4e0dfeaeae21c158257c7f'),
+(37, 1, 1, 1, '2025-11-27', 27, 'a30160b83c4e0dfeaeae21c158257c7f');
 
 --
 -- Indexes for dumped tables
@@ -226,19 +256,19 @@ ALTER TABLE `vertinimas`
 -- AUTO_INCREMENT for table `komentaras`
 --
 ALTER TABLE `komentaras`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `konkursas`
 --
 ALTER TABLE `konkursas`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `paveikslas`
 --
 ALTER TABLE `paveikslas`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `roles`
@@ -250,7 +280,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `vertinimas`
 --
 ALTER TABLE `vertinimas`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- Constraints for dumped tables

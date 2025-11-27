@@ -1,0 +1,40 @@
+services:
+  db:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: piesiniai
+      MYSQL_USER: stud
+      MYSQL_PASSWORD: stud
+    volumes:
+      - dbdata:/var/lib/mysql
+      - ./piesiniai.sql:/docker-entrypoint-initdb.d/01-piesiniai.sql:ro
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-proot" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_USER: stud
+      DB_PASS: stud
+      DB_NAME: piesiniai
+    volumes:
+      - .:/var/www/html
+      - ./apache/vhost.conf:/etc/apache2/sites-available/000-default.conf:ro
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+
+volumes:
+  dbdata:

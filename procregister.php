@@ -51,7 +51,7 @@ if (checkname($user)) { // vardas  geras,  nuskaityti vartotoja is DB
         $stmt = mysqli_prepare($db, "INSERT INTO " . TBL_USERS . " (uid, slapyvardis, slaptazodis, pilnas_vardas, gimtadienis, sukurta, role) VALUES (?, ?, ?, ?, ?, NOW(), ?)");
         if ($stmt) {
           $ulevel_int = (int) $ulevel;
-          mysqli_stmt_bind_param($stmt, "sssss i", $userid, $user, $pass, $fullname, $birthday, $ulevel_int);
+          mysqli_stmt_bind_param($stmt, "sssssi", $userid, $user, $pass, $fullname, $birthday, $ulevel_int);
           if (mysqli_stmt_execute($stmt)) {
             $_SESSION['message'] = "Registracija sėkminga";
           } else {
