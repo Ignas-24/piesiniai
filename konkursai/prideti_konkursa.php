@@ -16,6 +16,8 @@ if (!$db) {
     exit;
 }
 
+$errors = [];
+$pavadinimas = $aprasas = $ikelimo_pradzia = $vertinimo_pradzia = $vertinimo_pabaiga = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userid = $_SESSION['userid'] ?? '';
@@ -23,7 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: ../logout.php");
         exit;
     }
-    //double check
     $role_v = (int) $user_roles['Vertintojas'];
     $stmt = mysqli_prepare($db, "SELECT COUNT(*) AS VERTINTOJAI FROM " . TBL_USERS . " WHERE role = ?");
     if (!$stmt) {
@@ -53,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($pavadinimas === '')
         $errors[] = "Pavadinimas privalomas.";
-    // validate dates YYYY-MM-DD HH:MM
+
     $d1 = DateTime::createFromFormat('Y-m-d\TH:i', $ikelimo_pradzia);
     $d2 = DateTime::createFromFormat('Y-m-d\TH:i', $vertinimo_pradzia);
     $d3 = DateTime::createFromFormat('Y-m-d\TH:i', $vertinimo_pabaiga);
@@ -83,6 +84,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[] = "Klaida paruošiant užklausą.";
         }
     }
+} else {
+    $now = date('Y-m-d\TH:i');
+    $ikelimo_pradzia = $ikelimo_pradzia ?: $now;
+    $vertinimo_pradzia = $vertinimo_pradzia ?: $now;
+    $vertinimo_pabaiga = $vertinimo_pabaiga ?: $now;
 }
 ?>
 <!doctype html>
@@ -112,23 +118,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form method="post" action="prideti_konkursa.php" style="width:600px;margin:0 auto;">
         <p>Pavadinimas:<br>
             <input type="text" name="pavadinimas" class="s1"
-                value="<?php echo htmlspecialchars($pavadinimas ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                value="<?php echo htmlspecialchars($pavadinimas, ENT_QUOTES, 'UTF-8'); ?>">
         </p>
         <p>Aprašas:<br>
             <textarea name="aprasas" rows="6"
-                class="s1"><?php echo htmlspecialchars($aprasas ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                class="s1"><?php echo htmlspecialchars($aprasas, ENT_QUOTES, 'UTF-8'); ?></textarea>
         </p>
         <p>Įkėlimo pradžia:<br>
             <input type="datetime-local" name="ikelimo_pradzia" class="s1"
-                value="<?php echo htmlspecialchars($ikelimo_pradzia ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                value="<?php echo htmlspecialchars($ikelimo_pradzia, ENT_QUOTES, 'UTF-8'); ?>">
         </p>
         <p>Vertinimo pradžia:<br>
             <input type="datetime-local" name="vertinimo_pradzia" class="s1"
-                value="<?php echo htmlspecialchars($vertinimo_pradzia ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                value="<?php echo htmlspecialchars($vertinimo_pradzia, ENT_QUOTES, 'UTF-8'); ?>">
         </p>
         <p>Vertinimo pabaiga:<br>
             <input type="datetime-local" name="vertinimo_pabaiga" class="s1"
-                value="<?php echo htmlspecialchars($vertinimo_pabaiga ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                value="<?php echo htmlspecialchars($vertinimo_pabaiga, ENT_QUOTES, 'UTF-8'); ?>">
         </p>
         <p><input type="submit" value="Pridėti konkursą"></p>
     </form>

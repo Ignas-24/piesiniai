@@ -150,10 +150,9 @@ $_SESSION['prev'] = "konkursai";
             <td>Konkursas</td>
             <td>Aprašas</td>
             <td>Įkėlimo pradžia</td>
-            <td>Įkėlimo pabaiga</td>";
-    if ($_SESSION['ulevel'] == $user_roles["Admin"] || $_SESSION['ulevel'] == $user_roles["Naudotojas"]) {
-        echo "<td>Veiksmai</td>";
-    }
+            <td>Įkėlimo pabaiga</td>
+            <td>Veiksmai</td>";
+
     echo "</tr>";
 
     $stmt = mysqli_prepare($db, "SELECT id, pavadinimas, aprasas, ikelimo_pradzia, vertinimo_pradzia FROM " . TBL_KONKURSAS . " WHERE ikelimo_pradzia <= NOW() AND vertinimo_pradzia > NOW() ORDER BY ikelimo_pradzia ASC");
@@ -182,11 +181,9 @@ $_SESSION['prev'] = "konkursai";
             <td>" . $aprasas . "</td>
             <td>" . $ikelimo_pradzia . "</td>
             <td>" . $vertinimo_pradzia . "</td>";
-        if ($_SESSION['ulevel'] == $user_roles["Naudotojas"] || $_SESSION['ulevel'] == $user_roles["Admin"]) {
-            echo "<td><a href=\"konkursai/perziureti_konkursa.php?id=" . $id . "\">Peržiūrėti</a><br>";
-            if ($_SESSION['ulevel'] == $user_roles["Naudotojas"]) {
-                echo "<a href=\"ikelimas.php?konkursas_id=" . $id . "\">Įkelti paveikslą</a></td></tr>";
-            }
+        echo "<td><a href=\"konkursai/perziureti_konkursa.php?id=" . $id . "\">Peržiūrėti</a><br>";
+        if ($_SESSION['ulevel'] == $user_roles["Naudotojas"]) {
+            echo "<a href=\"ikelimas.php?konkursas_id=" . $id . "\">Įkelti paveikslą</a></td></tr>";
         }
         echo "</tr>";
     }

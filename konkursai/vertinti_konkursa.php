@@ -53,9 +53,13 @@ if (!$db) {
     }
     $msg = $_GET['msg'] ?? '';
     if (!empty($msg)) {
-        $vertintas_paveikslas_id = $_GET['vertintas'] ?? '';
-        if (!empty($vertintas_paveikslas_id)) {
-            echo "<p style='color:green;'>Paveikslas sėkmingai įvertintas.</p>";
+        if ($msg === 'vertinta') {
+            $vertintas_paveikslas_id = $_GET['vertintas'] ?? '';
+            if (!empty($vertintas_paveikslas_id)) {
+                echo "<p style='color:green;'>Paveikslas sėkmingai įvertintas.</p>";
+            }
+        } else if ($msg === 'already_rated') {
+            echo "<p style='color:red;'>Paveikslas jau buvo įvertintas.</p>";
         }
     }
     $stmt = mysqli_prepare($db, "SELECT pavadinimas, aprasas, ikelimo_pradzia, vertinimo_pradzia, vertinimo_pabaiga FROM " . TBL_KONKURSAS . " WHERE id = ?");
