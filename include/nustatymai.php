@@ -38,7 +38,7 @@ $uregister = "both";  // kaip registruojami vartotojai:
 $usermenu = array(
 	["Konkursų valdymas", [20], "konkursu_valdymas.php"],
 	["Konkursai", [0, 5, 10, 20], "konkursai.php"],
-	["Nuotraukų įkėlimas", [5], "ikelimas.php"]
+	["Nuotraukų įkėlimas", [5, 20], "ikelimas.php"]
 );
 
 // karkaso vaizdavimą paredaguokite savo stiliumi keisdami top.png (pradinis yra 1027x122, read teisė visiems)

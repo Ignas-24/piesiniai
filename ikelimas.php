@@ -2,7 +2,7 @@
 session_start();
 include("include/nustatymai.php");
 
-if (!isset($_SESSION['prev']) || $_SESSION['ulevel'] != $user_roles["Naudotojas"]) {
+if (!isset($_SESSION['prev']) || ($_SESSION['ulevel'] != $user_roles["Naudotojas"] && $_SESSION['ulevel'] != $user_roles['Admin'])) {
     header("Location: logout.php");
     exit;
 }

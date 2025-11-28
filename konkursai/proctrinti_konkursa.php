@@ -65,6 +65,6 @@ if (is_dir($uploadDir)) {
     @rmdir($uploadDir);
 }
 
-header("Location: ../konkursu_valdymas.php");
+header("Location: ../konkursu_perziura.php");
 exit;
 ?>

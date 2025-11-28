@@ -28,7 +28,7 @@ if (!in_array($file['type'], $allowed_types)) {
     echo "Leidžiami tik JPEG ir PNG paveikslėliai.";
     exit;
 }
-//check comment and name
+
 $komentaras = trim($_POST['komentaras'] ?? '');
 $pavadinimas = trim($_POST['pavadinimas'] ?? '');
 $konkursas = trim($_POST['konkursas'] ?? '');

@@ -182,7 +182,7 @@ $_SESSION['prev'] = "konkursai";
             <td>" . $ikelimo_pradzia . "</td>
             <td>" . $vertinimo_pradzia . "</td>";
         echo "<td><a href=\"konkursai/perziureti_konkursa.php?id=" . $id . "\">Peržiūrėti</a><br>";
-        if ($_SESSION['ulevel'] == $user_roles["Naudotojas"]) {
+        if ($_SESSION['ulevel'] == $user_roles["Naudotojas"] || $_SESSION['ulevel'] == $user_roles["Admin"]) {
             echo "<a href=\"ikelimas.php?konkursas_id=" . $id . "\">Įkelti paveikslą</a></td></tr>";
         }
         echo "</tr>";

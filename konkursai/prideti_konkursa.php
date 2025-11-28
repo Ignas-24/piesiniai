@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             mysqli_stmt_close($stmt);
             if ($ok) {
                 mysqli_close($db);
-                header("Location: ../konkursu_valdymas.php");
+                header("Location: ../konkursu_perziura.php");
                 exit;
             } else {
                 $errors[] = "Klaida įrašant į DB.";
