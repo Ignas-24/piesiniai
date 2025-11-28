@@ -10,3 +10,4 @@ RUN a2enmod rewrite headers
 WORKDIR /var/www/html
 COPY . /var/www/html
 
+USER 1000
